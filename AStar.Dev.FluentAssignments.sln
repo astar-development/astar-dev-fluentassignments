@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B7039951-00C5-407E-AB8B-4C7E4580D392}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "unit", "unit", "{9B3C4341-A95A-4149-8212-8223E12489C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AStar.Dev.FluentAssignments.Unit.Tests", "tests\unit\AStar.Dev.FluentAssignments.Unit.Tests\AStar.Dev.FluentAssignments.Unit.Tests.csproj", "{BE7BEA99-D482-46F4-BEDE-860AC3F29F50}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9744EC4A-232A-4927-B806-614ADCF3B119}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AStar.Dev.FluentAssignments", "src\AStar.Dev.FluentAssignments\AStar.Dev.FluentAssignments.csproj", "{169327F6-FC38-4627-8AA0-1322AD06D541}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE7BEA99-D482-46F4-BEDE-860AC3F29F50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE7BEA99-D482-46F4-BEDE-860AC3F29F50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE7BEA99-D482-46F4-BEDE-860AC3F29F50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE7BEA99-D482-46F4-BEDE-860AC3F29F50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{169327F6-FC38-4627-8AA0-1322AD06D541}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{169327F6-FC38-4627-8AA0-1322AD06D541}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{169327F6-FC38-4627-8AA0-1322AD06D541}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{169327F6-FC38-4627-8AA0-1322AD06D541}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9B3C4341-A95A-4149-8212-8223E12489C5} = {B7039951-00C5-407E-AB8B-4C7E4580D392}
+		{BE7BEA99-D482-46F4-BEDE-860AC3F29F50} = {9B3C4341-A95A-4149-8212-8223E12489C5}
+		{169327F6-FC38-4627-8AA0-1322AD06D541} = {9744EC4A-232A-4927-B806-614ADCF3B119}
+	EndGlobalSection
+EndGlobal
