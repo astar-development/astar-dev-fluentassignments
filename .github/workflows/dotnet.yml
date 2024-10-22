@@ -57,6 +57,14 @@ jobs:
         dotnet-coverage collect 'dotnet test --filter "FullyQualifiedName!~Acceptance.Tests"' -f xml -o 'coverage.xml'
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
+    - name: stryker dotnet
+      uses: naveen497/actions@0.0.1
+    
+    - name: Run stryker dotnet with break-at set a little high.
+      uses: frankhaugen/frank-dotnet-script-run@1.0
+      with:
+        script-path: dotnet stryker --break-at 99
+          
     - name: Pack NuGet package
       if: github.ref == 'refs/heads/main'
       run: dotnet pack .\src\AStar.Dev.FluentAssignments\AStar.Dev.FluentAssignments.csproj
