@@ -42,6 +42,7 @@ jobs:
         path: "**/.*"
               
   analyse:
+    needs: build
     name: Analyze
     runs-on: windows-latest
     steps:
@@ -96,6 +97,7 @@ jobs:
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
               
   publish:
+    needs: analyse
     name: publish NuGet if applicable and on main
     runs-on: windows-latest
     steps:
