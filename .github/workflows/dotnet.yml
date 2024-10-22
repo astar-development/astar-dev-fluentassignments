@@ -23,7 +23,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Build and analyze
+    - name: Build and test the solution
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -39,7 +39,7 @@ jobs:
       uses: actions/upload-artifact@v4.4.3
       with:
         name: FluentAssignments
-        path: "**/.*"
+        path: "**/*"
               
   analyse:
     needs: build
@@ -60,7 +60,7 @@ jobs:
     - uses: actions/download-artifact@master
       with:
         name: FluentAssignments
-        path: "**/.*"
+        path: "**/*"
 
     - name: Cache SonarCloud packages
       uses: actions/cache@v4.1.1
@@ -90,8 +90,6 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       shell: powershell
       run: |
-        dotnet tool install --global dotnet-coverage
-        dotnet tool install --global dotnet-stryker
         .\.sonar\scanner\dotnet-sonarscanner begin /k:"astar-development_astar-dev-fluentassignments" /o:"astar-development" /d:sonar.scanner.scanAll=false /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
         dotnet-coverage collect 'dotnet test --filter "FullyQualifiedName!~Acceptance.Tests"' -f xml -o 'coverage.xml'
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
