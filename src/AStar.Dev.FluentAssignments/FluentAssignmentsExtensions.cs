@@ -57,15 +57,15 @@ public static class FluentAssignmentsExtensions
     /// <param name="minimum"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    public static T ItIsGreaterThan<T>(this T value, T minimum) where T : INumber<T> => value < minimum ? throw new ArgumentException(nameof(minimum)) : value;
+    public static T ItIsGreaterThan<T>(this T value, T minimum) where T : INumber<T> => value < minimum ? throw new ArgumentException($"The specified value of{value} was not greater than the specified minimum of {minimum}", nameof(minimum)) : value;
 
     /// <summary>
     ///
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="value"></param>
-    /// <param name="minimum"></param>
+    /// <param name="maximum"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    public static T ItIsLessThan<T>(this T value, T minimum) where T : INumber<T> => value > minimum ? throw new ArgumentException(nameof(minimum)) : value;
+    public static T ItIsLessThan<T>(this T value, T maximum) where T : INumber<T> => value > maximum ? throw new ArgumentException($"The specified value of{value} was not less than the specified maximum of {maximum}", nameof(maximum)) : value;
 }
