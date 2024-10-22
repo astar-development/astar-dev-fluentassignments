@@ -51,12 +51,10 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     - name: stryker dotnet install
-      run: dotnet tool install --global dotnet-coverage
-    
+      run: dotnet tool install --global dotnet-stryker
+      
     - name: Run stryker dotnet with break-at set a little high.
-      uses: frankhaugen/frank-dotnet-script-run@1.0
-      with:
-        script-path: dotnet stryker --break-at 99
+      run: dotnet stryker --break-at 99
           
     - name: Pack NuGet package
       if: github.ref == 'refs/heads/main'
