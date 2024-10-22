@@ -60,7 +60,6 @@ jobs:
     - uses: actions/download-artifact@master
       with:
         name: FluentAssignments
-        path: "**/*"
 
     - name: Cache SonarCloud packages
       uses: actions/cache@v4.1.1
