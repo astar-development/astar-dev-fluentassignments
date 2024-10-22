@@ -50,8 +50,8 @@ jobs:
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-    - name: stryker dotnet
-      uses: naveen497/actions@0.0.1
+    - name: stryker dotnet install
+      run: dotnet tool install --global dotnet-coverage
     
     - name: Run stryker dotnet with break-at set a little high.
       uses: frankhaugen/frank-dotnet-script-run@1.0
