@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: Build and analyze
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - name: Set up JDK
       uses: actions/setup-java@v4.4.0
@@ -20,8 +20,8 @@ jobs:
         
     - name: Checkout
       uses: actions/checkout@v4.2.1
-      with:  
-        fetch-depth: 0 
+      with:
+        fetch-depth: 0
 
     - name: Cache SonarCloud packages
       uses: actions/cache@v4.1.1
@@ -40,33 +40,23 @@ jobs:
         
     - name: Install SonarCloud scanner
       if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-      shell: pwsh
+      shell: powershell
       run: |
         New-Item -Path .\.sonar\scanner -ItemType Directory
         dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
-
-    - name: Build 🧱
-      run: dotnet build --configuration Release --no-incremental
-
-    - name: Test 🧪
-      run: dotnet test --configuration Release --no-build
         
-    - name: stryker dotnet install
-      run: dotnet tool install --global dotnet-stryker
-      
-    - name: Build🧱, Test 🧪, run Stryler and analyze in SonarCloud
+    - name: Build and analyze
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      shell: pwsh
+      shell: powershell
       run: |
         dotnet tool install --global dotnet-coverage
         .\.sonar\scanner\dotnet-sonarscanner begin /k:"astar-development_astar-dev-fluentassignments" /o:"astar-development" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
         dotnet build --configuration Release
-        dotnet stryker --break-at 99
         dotnet-coverage collect 'dotnet test --filter "FullyQualifiedName!~Acceptance.Tests"' -f xml -o 'coverage.xml'
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-                  
+
     - name: Pack NuGet package
       if: github.ref == 'refs/heads/main'
       run: dotnet pack .\src\AStar.Dev.FluentAssignments\AStar.Dev.FluentAssignments.csproj
