@@ -1,0 +1,109 @@
+name: .NET
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+    steps:
+    - name: Set up JDK
+      uses: actions/setup-java@v4.4.0
+      with:
+        java-version: 17
+        distribution: 'zulu'
+        
+    - name: Checkout
+      uses: actions/checkout@v4.2.1
+      with:
+        fetch-depth: 0
+
+    - name: Build 🧱 and test 🧪 the solution
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      shell: powershell
+      run: |
+        dotnet build --configuration Release
+        dotnet test --filter "FullyQualifiedName!~Acceptance.Tests"
+  
+    - name: Run Stryker tests 🧪
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      shell: powershell
+      run: |
+        dotnet tool install --global dotnet-stryker
+        dotnet stryker --break-at 99
+              
+  analyse:
+    needs: build
+    name: Analyse
+    runs-on: windows-latest
+    steps:
+    - name: Set up JDK
+      uses: actions/setup-java@v4.4.0
+      with:
+        java-version: 17
+        distribution: 'zulu'
+        
+    - name: Checkout
+      uses: actions/checkout@v4.2.1
+      with:
+        fetch-depth: 0
+
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v4.1.1
+      with:
+        path: ~\sonar\cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+
+    - name: Cache SonarCloud scanner
+      id: cache-sonar-scanner
+      uses: actions/cache@v4.1.1
+      with:
+        path: .\.sonar\scanner
+        key: ${{ runner.os }}-sonar-scanner
+        restore-keys: ${{ runner.os }}-sonar-scanner
+        
+    - name: Install SonarCloud scanner
+      if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+      shell: powershell
+      run: |
+        New-Item -Path .\.sonar\scanner -ItemType Directory
+        dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+        
+    - name: Analyze
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      shell: powershell
+      run: |
+        .\.sonar\scanner\dotnet-sonarscanner begin /k:"astar-development_astar-dev-fluentassignments" /o:"astar-development" /d:sonar.scanner.scanAll=false /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+        dotnet build
+        .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+              
+  publish:
+    needs: analyse
+    name: Publish NuGet if applicable and on main
+    runs-on: windows-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4.2.1
+      with:
+        fetch-depth: 0
+
+    - name: Pack NuGet package
+      if: github.ref == 'refs/heads/main'
+      run: dotnet pack .\src\AStar.Dev.FluentAssignments\AStar.Dev.FluentAssignments.csproj
+
+    - name: Push to NuGet
+      if: github.ref == 'refs/heads/main'
+      run: dotnet nuget push "**\AStar.Dev.FluentAssignments.*.nupkg" --api-key ${{secrets.nuget_api_key}} --skip-duplicate --source https://api.nuget.org/v3/index.json
+  
