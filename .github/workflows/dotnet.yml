@@ -29,9 +29,16 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       shell: powershell
       run: |
-        dotnet tool install --global dotnet-stryker
         dotnet build --configuration Release
         dotnet test --filter "FullyQualifiedName!~Acceptance.Tests"
+  
+    - name: Run Stryker tests 🧪
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      shell: powershell
+      run: |
+        dotnet tool install --global dotnet-stryker
         dotnet stryker --break-at 99
               
   analyse:

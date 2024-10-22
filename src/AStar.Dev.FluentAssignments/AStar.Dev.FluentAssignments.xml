@@ -67,7 +67,7 @@
              </summary>
              <typeparam name="T"></typeparam>
              <param name="value"></param>
-             <param name="minimum"></param>
+             <param name="maximum"></param>
              <returns></returns>
              <exception cref="T:System.ArgumentException"></exception>
         </member>
