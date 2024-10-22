@@ -23,19 +23,23 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Build
+    - name: Build and analyze
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       shell: powershell
       run: |
+        dotnet tool install --global dotnet-coverage
+        dotnet tool install --global dotnet-stryker
         dotnet build --configuration Release
+        dotnet stryker --break-at 99
+        dotnet-coverage collect 'dotnet test --filter "FullyQualifiedName!~Acceptance.Tests"' -f xml -o 'coverage.xml'
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.4.3
       with:
-        name: fluentassignments-artifact
-        path: **\AStar.Dev.FluentAssignments              
+        name: FluentAssignments
+        path: "**/.*"
               
   analyse:
     name: Analyze
@@ -47,6 +51,16 @@ jobs:
         java-version: 17
         distribution: 'zulu'
         
+    - name: Checkout
+      uses: actions/checkout@v4.2.1
+      with:
+        fetch-depth: 0
+
+    - uses: actions/download-artifact@master
+      with:
+        name: FluentAssignments
+        path: "**/.*"
+
     - name: Cache SonarCloud packages
       uses: actions/cache@v4.1.1
       with:
@@ -69,12 +83,7 @@ jobs:
         New-Item -Path .\.sonar\scanner -ItemType Directory
         dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
         
-    - uses: actions/download-artifact@master
-      with:
-        name: fluentassignments-artifact
-        path: /
-    
-    - name: Build and analyze
+    - name: Analyze
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -83,9 +92,13 @@ jobs:
         dotnet tool install --global dotnet-coverage
         dotnet tool install --global dotnet-stryker
         .\.sonar\scanner\dotnet-sonarscanner begin /k:"astar-development_astar-dev-fluentassignments" /o:"astar-development" /d:sonar.scanner.scanAll=false /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
-        dotnet stryker --break-at 99
         dotnet-coverage collect 'dotnet test --filter "FullyQualifiedName!~Acceptance.Tests"' -f xml -o 'coverage.xml'
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+              
+  publish:
+    name: publish NuGet if applicable and on main
+    runs-on: windows-latest
+    steps:
 
     - name: Pack NuGet package
       if: github.ref == 'refs/heads/main'
