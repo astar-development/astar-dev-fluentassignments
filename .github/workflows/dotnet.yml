@@ -30,6 +30,12 @@ jobs:
         
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@v3.1.0
+      with:
+        args: >
+          -Dsonar.organization=astar-development
+          -Dsonar.projectKey=astar-development_astar-dev-fluentassignments
+          -Dsonar.python.coverage.reportPaths=coverage.xml
+          -Dsonar.verbose=true
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         
